@@ -32,8 +32,11 @@ pip install -r requirements.txt
 
 ```shell
 # from an ODT file, saving to default path `outputs/wordcloud.png`
-python bin/generate.py --input_file=/path/to/input.odt
+python bin/generate.py --input_file /path/to/input.odt
 
 # specifying the output file
-python bin/generate.py --input_file=/path/to/input.odt --output_file=/path/to/output.png
+python bin/generate.py --input_file /path/to/input.odt --output_file /path/to/output.png
+
+# passing words to be filtered out from the output
+python bin/generate.py --input_file /path/to/input.odt --custom_stopwords word1 word2 word3
 ```
