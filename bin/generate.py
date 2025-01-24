@@ -8,7 +8,7 @@ Returns:
 import argparse
 from odf.opendocument import load
 from odf.text import P
-from wordcloud import WordCloud
+from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 
 
@@ -36,6 +36,25 @@ def read_odt_file(file_path):
     return "\n".join(text_content)
 
 
+def filter_text(text, custom_stopwords):
+    """
+    Filters out stopwords and custom words from the input text.
+
+    Args:
+        text (str): The input text to be filtered.
+        custom_stopwords (set): A set of custom words to be filtered out.
+
+    Returns:
+        str: The filtered text.
+    """
+    stopwords = STOPWORDS.union(custom_stopwords)
+    words = text.split()
+    filtered_words = [word for word in words if word.lower() not in stopwords]
+    filtered_text = " ".join(filtered_words)
+
+    return filtered_text
+
+
 def main():
     """
     Main function to generate a word cloud from an ODT file.
@@ -54,6 +73,8 @@ def main():
     parser = argparse.ArgumentParser(
         description="Generate a word cloud from an ODT file."
     )
+
+    # Add arguments
     parser.add_argument("--input_file", type=str, help="Path to the ODT file")
     parser.add_argument(
         "--output_file",
@@ -62,6 +83,14 @@ def main():
         required=False,
         default="outputs/wordcloud.png",
     )
+    parser.add_argument(
+        "--custom_stopwords",
+        type=str,
+        nargs="*",
+        help="Custom stopwords to exclude from the word cloud",
+        required=False,
+        default=[],
+    )
 
     # Parse arguments
     args = parser.parse_args()
@@ -69,12 +98,15 @@ def main():
     # Read text from the ODT file
     input_text = read_odt_file(args.input_file)
 
+    # Filter text
+    filtered_text = filter_text(input_text, set(args.custom_stopwords))
+
     # Set output file
     output_file = args.output_file
 
     # Create a word cloud object
     wordcloud = WordCloud(width=800, height=400, background_color="white").generate(
-        input_text
+        filtered_text
     )
 
     # Save & Display the word cloud using matplotlib
